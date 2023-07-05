@@ -1,10 +1,20 @@
-import 'package:answerslecture10/question.dart';
 import 'package:answerslecture10/quizBrain.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() {
-  runApp(const QuizPage());
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: QuizPage(),
+    );
+  }
 }
 
 class QuizPage extends StatefulWidget {
@@ -19,88 +29,88 @@ class _QuizPageState extends State<QuizPage> {
   List<Icon> keep = [];
   List<String> questions = [];
   void checkAnswers(bool uerChoice) {
+    if (quizBrain.getQuestionAnswer() == uerChoice) {
+      keep.add(
+        const Icon(
+          Icons.check,
+          color: Colors.green,
+        ),
+      );
+    } else {
+      keep.add(
+        const Icon(
+          Icons.close,
+          color: Colors.red,
+        ),
+      );
+    }
+
     if (quizBrain.isFinished()!) {
       Alert(context: context, title: "Finished", desc: "You are Done.").show();
       quizBrain.reset();
       keep.clear();
-    } else {
-      if (quizBrain.getQuestionAnswer() == uerChoice) {
-        keep.add(
-          const Icon(
-            Icons.check,
-            color: Colors.green,
-          ),
-        );
-      } else {
-        keep.add(
-          const Icon(
-            Icons.close,
-            color: Colors.red,
-          ),
-        );
-      }
-      setState(() {
-        quizBrain.nextQuestion();
-      });
     }
+
+    setState(() {
+      quizBrain.nextQuestion();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            backgroundColor: Colors.black,
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  //false true true
-                  flex: 5,
-                  child: Center(
-                    child: Text(
-                      quizBrain.getQuestions(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 24),
-                    ),
+    return Scaffold(
+        backgroundColor: Colors.black,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              //false true true
+              flex: 5,
+              child: Center(
+                child: Text(
+                  quizBrain.getQuestions(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    checkAnswers(true);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                  child: const Text("True",
+                      style: TextStyle(color: Colors.white, fontSize: 20)),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    checkAnswers(false);
+                  },
+                  child: const Text(
+                    "false",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        checkAnswers(true);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      child: const Text("True",
-                          style: TextStyle(color: Colors.white, fontSize: 20)),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () {
-                        checkAnswers(false);
-                      },
-                      child: const Text(
-                        "false",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ),
-                  ),
-                ),
-                Row(
-                  children: keep,
-                )
-              ],
-            )));
+              ),
+            ),
+            Row(
+              children: keep,
+            )
+          ],
+        ));
   }
 }
